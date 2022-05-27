@@ -10,17 +10,15 @@ import java.util.Date;
 /**
  * @author Adriano Rabello 27/05/2022 19:54:18
  **/
-public class LocadoraService {
+public class LocacaoService {
 
     public Locacao alugarFilme(Usuario usuario, Filme filme){
 
         return new Locacao().builder()
-                .filme(new Filme().builder()
-                        .nome("Rmabo-IV")
-                        .build())
-                .usuario(new Usuario().builder()
-                        .nome("Adriano")
-                        .build())
+                .filme(filme)
+                .usuario(usuario)
+                .dataRetorno(DataUtils.adicionarDias(new Date(),1))
+                .valor(filme.getPrecoLocacao())
                 .dataLocacao(new Date())
                 .dataRetorno(DataUtils.adicionarDias(new Date(),1))
                 .build();

@@ -26,4 +26,8 @@ public class DataUtils {
         calendar.add(Calendar.YEAR, ano);
         return calendar.getTime();
     }
+
+    public static boolean isMesmaData(Date data1, Date data2){
+        return data1.equals(data2);
+    }
 }
