@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -46,7 +47,8 @@ public class LocacaoTest {
         error.checkThat(locacao.getValor(),is(2.0));
         error.checkThat(locacao.getValor(),not(5.0));
 
-
     }
+
+
 
 }

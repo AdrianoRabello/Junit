@@ -11,6 +11,7 @@ import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class LocacaoServiceTest {
 
@@ -141,5 +142,62 @@ public class LocacaoServiceTest {
 
         locacaoService.alugarFilme(usuario,Arrays.asList(filme1,filme2));
 
+    }
+
+
+    @Test
+    public void deveriaAplicarDescronte75pctNoTerceiroFilme() throws FilmeSemEstoqueException, LocadoraException {
+        Usuario usuario = new Usuario("Adriano");
+        List<Filme> filmes = Arrays.asList(
+                new Filme("Filme 01", 1, 4.0),
+                new Filme("Filme 02", 1, 4.0),
+                new Filme("Filme 03", 1, 4.0)
+        );
+        Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
+        Assert.assertThat(locacao.getValor(),CoreMatchers.is(11.0));
+    }
+
+    @Test
+    public void deverapagar50PercNoQuartoFilme() throws FilmeSemEstoqueException, LocadoraException {
+        Usuario usuario = new Usuario("Adriano");
+        List<Filme> filmes = Arrays.asList(
+                new Filme("Filme 01", 1, 4.0),
+                new Filme("Filme 02", 1, 4.0),
+                new Filme("Filme 03", 1, 4.0),
+                new Filme("Filme 03", 1, 4.0)
+        );
+        Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
+        Assert.assertThat(locacao.getValor(),CoreMatchers.is(13.0));
+    }
+
+
+    @Test
+    public void deverapagar25PercNoQuintoFilme() throws FilmeSemEstoqueException, LocadoraException {
+        Usuario usuario = new Usuario("Adriano");
+        List<Filme> filmes = Arrays.asList(
+                new Filme("Filme 01", 1, 4.0),
+                new Filme("Filme 02", 1, 4.0),
+                new Filme("Filme 03", 1, 4.0),
+                new Filme("Filme 04", 1, 4.0),
+                new Filme("Filme 05", 1, 4.0)
+        );
+        Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
+        Assert.assertThat(locacao.getValor(),CoreMatchers.is(14.0));
+    }
+
+
+    @Test
+    public void deveraLevarFimeSeisGratuitamente() throws FilmeSemEstoqueException, LocadoraException {
+        Usuario usuario = new Usuario("Adriano");
+        List<Filme> filmes = Arrays.asList(
+                new Filme("Filme 01", 1, 4.0),
+                new Filme("Filme 02", 1, 4.0),
+                new Filme("Filme 03", 1, 4.0),
+                new Filme("Filme 04", 1, 4.0),
+                new Filme("Filme 05", 1, 4.0),
+                new Filme("Filme 06", 1, 4.0)
+        );
+        Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
+        Assert.assertThat(locacao.getValor(),CoreMatchers.is(14.0));
     }
 }

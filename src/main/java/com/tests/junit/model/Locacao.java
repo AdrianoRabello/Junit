@@ -5,6 +5,7 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Adriano Rabello 27/05/2022 19:49:01
@@ -18,16 +19,16 @@ import java.util.Date;
 public class Locacao {
 
     private Usuario usuario;
-    private Collection<Filme> filmes = new ArrayList<>();
+    private List<Filme> filmes = new ArrayList<>();
     private Date dataLocacao;
     private Date dataRetorno;
-    private  double valor;
+    private double valor;
 
-    public void adicionarFilme(Filme filme){
+    public void adicionarFilme(Filme filme) {
         this.filmes.add(filme);
     }
 
-    public void somarValorTotalLocacao(){
+    public void somarValorTotalLocacao() {
         this.valor = filmes.stream().map(x -> x.getPrecoLocacao())
                 .reduce((a, b) -> a + b).get();
     }

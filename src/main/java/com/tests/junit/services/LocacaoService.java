@@ -7,17 +7,14 @@ import com.tests.junit.model.Locacao;
 import com.tests.junit.model.Usuario;
 import com.tests.junit.utils.DataUtils;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author Adriano Rabello 27/05/2022 19:54:18
  **/
 public class LocacaoService {
 
-    public Locacao alugarFilme(Usuario usuario, Collection<Filme> filmes) throws Exception {
+    public Locacao alugarFilme(Usuario usuario, List<Filme> filmes) throws LocadoraException, FilmeSemEstoqueException {
 
 
         if (Objects.isNull(filmes) || filmes.isEmpty()) {
@@ -32,10 +29,6 @@ public class LocacaoService {
             throw new LocadoraException("O usuário deve ser informado");
         }
 
-
-        Optional<Double> valorDosFilmes = filmes.stream().map(x -> x.getPrecoLocacao())
-                .reduce((a, b) -> a + b);
-
         return new Locacao().builder()
                 .filmes(filmes)
                 .usuario(usuario)
@@ -46,10 +39,36 @@ public class LocacaoService {
                 .build();
     }
 
-    private Double somarValoresFilme(Collection<Filme> filmes){
-        Optional<Double> valorOptional = filmes.stream().map(x -> x.getPrecoLocacao())
-                .reduce((a, b) -> a + b);
-        return valorOptional.get();
+    private Double somarValoresFilme(List<Filme> filmes){
+//        Optional<Double> valorOptional = filmes.stream().map(x -> x.getPrecoLocacao())
+//                .reduce((a, b) -> a + b);
+
+        Double valorTotal = 0d;
+        for (int i = 0; i < filmes.size(); i++) {
+            Filme filme = filmes.get(i);
+            Double valorFilme = filme.getPrecoLocacao();
+
+            if(i == 2){
+                valorFilme = valorFilme * 0.75;
+            }
+
+            if(i == 3){
+                valorFilme = valorFilme * 0.50;
+            }
+
+            if(i == 4){
+                valorFilme = valorFilme  * 0.25;
+            }
+
+            if(i == 5){
+                valorFilme = 0d;
+            }
+
+            valorTotal += valorFilme;
+
+        }
+
+        return valorTotal;
     }
 
 }
