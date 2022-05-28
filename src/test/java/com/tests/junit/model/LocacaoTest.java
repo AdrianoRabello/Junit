@@ -27,7 +27,12 @@ public class LocacaoTest {
                 .precoLocacao(5.0)
                 .build();
 
-        Locacao locacao = locacaoService.alugarFilme(adriano, filme);
+        Locacao locacao = null;
+        try {
+            locacao = locacaoService.alugarFilme(adriano, filme);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
 
         assertThat(locacao.getValor(), is(5.0));
