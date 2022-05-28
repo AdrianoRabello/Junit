@@ -5,6 +5,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
+import java.util.Arrays;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -29,7 +31,7 @@ public class LocacaoTest {
 
         Locacao locacao = null;
         try {
-            locacao = locacaoService.alugarFilme(adriano, filme);
+            locacao = locacaoService.alugarFilme(adriano, Arrays.asList(filme));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

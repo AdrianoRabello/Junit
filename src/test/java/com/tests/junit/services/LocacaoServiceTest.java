@@ -10,6 +10,8 @@ import org.junit.*;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
 
+import java.util.Arrays;
+
 public class LocacaoServiceTest {
 
 
@@ -51,7 +53,7 @@ public class LocacaoServiceTest {
                 .estoque(1)
                 .build();
         // ação
-        Locacao locacao = locacaoService.alugarFilme(usuario, filme);
+        Locacao locacao = locacaoService.alugarFilme(usuario,  Arrays.asList(filme));
         //verificação
         Assert.assertEquals(5.0, locacao.getValor(), 0.01);
     }
@@ -63,7 +65,7 @@ public class LocacaoServiceTest {
                 .nome("Filme 01")
                 .estoque(0)
                 .build();
-        locacaoService.alugarFilme(usuario, filme);
+        locacaoService.alugarFilme(usuario,  Arrays.asList(filme));
     }
     @Test
     public void deveraLancarExcecaoValidandoAMensagem() {
@@ -75,11 +77,11 @@ public class LocacaoServiceTest {
                 .build();
 
         try {
-            locacaoService.alugarFilme(usuario, filme);
+            locacaoService.alugarFilme(usuario,  Arrays.asList(filme));
             Assert.fail("Devera lançar exceção para validar a mensagem ");
         } catch (Exception e) {
-            Assert.assertThat(e.getMessage(), CoreMatchers.is("Estoque é 0"));
-            Assert.assertEquals("Estoque é 0", e.getMessage());
+            Assert.assertThat(e.getMessage(), CoreMatchers.is("O estoque do filme deve ser maior que 0"));
+            Assert.assertEquals("O estoque do filme deve ser maior que 0", e.getMessage());
         }
     }
     @Test
@@ -91,7 +93,7 @@ public class LocacaoServiceTest {
                 .estoque(0)
                 .build();
         exception.expect(FilmeSemEstoqueException.class);
-        locacaoService.alugarFilme(usuario, filme);
+        locacaoService.alugarFilme(usuario,  Arrays.asList(filme));
     }
     @Test
     public void deveraLancarExcecaoQuandoUsuarioRhNulo() throws Exception {
@@ -101,7 +103,7 @@ public class LocacaoServiceTest {
                 .estoque(1)
                 .build();
         try {
-            locacaoService.alugarFilme(null, filme);
+            locacaoService.alugarFilme(null,  Arrays.asList(filme));
             Assert.fail();
         } catch (LocadoraException e) {
             Assert.assertEquals("O usuário deve ser informado", e.getMessage());
@@ -118,5 +120,26 @@ public class LocacaoServiceTest {
 
             Assert.assertEquals(e.getClass().getName(), LocadoraException.class.getName());
         }
+    }
+
+
+    @Test
+    public void deveSomarValorDosFilmes() throws Exception {
+        Filme filme1 = new Filme().builder()
+                .precoLocacao(5.0)
+                .nome("Filme 01")
+                .estoque(1)
+                .build();
+
+        Filme filme2 = new Filme().builder()
+                .precoLocacao(3.0)
+                .nome("Filme 01")
+                .estoque(1)
+                .build();
+
+        Usuario usuario = new Usuario("Adriano Rabello");
+
+        locacaoService.alugarFilme(usuario,Arrays.asList(filme1,filme2));
+
     }
 }
