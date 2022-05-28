@@ -1,5 +1,7 @@
 package com.tests.junit.services;
 
+import com.tests.junit.exceptions.FilmeSemEstoqueException;
+import com.tests.junit.exceptions.LocadoraException;
 import com.tests.junit.model.Filme;
 import com.tests.junit.model.Locacao;
 import com.tests.junit.model.Usuario;
@@ -8,9 +10,10 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.internal.runners.statements.ExpectException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 
 public class LocacaoServiceTest {
 
@@ -38,7 +41,7 @@ public class LocacaoServiceTest {
         Assert.assertTrue(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1)));
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = FilmeSemEstoqueException.class)
     public void deveraLancarExcecaoComEstoqueFilmeComZero() throws Exception {
         LocacaoService locacaoService = new LocacaoService();
         Usuario usuario = new Usuario().builder().nome("Adriano Rabello").build();
@@ -80,8 +83,41 @@ public class LocacaoServiceTest {
                 .estoque(0)
                 .build();
 
-        exception.expect(Exception.class);
+        exception.expect(FilmeSemEstoqueException.class);
         locacaoService.alugarFilme(usuario, filme);
+
+    }
+
+    @Test
+    public void deveraLancarExcecaoQuandoUsuarioRhNulo() throws Exception {
+        LocacaoService locacaoService = new LocacaoService();
+        Filme filme = new Filme().builder()
+                .precoLocacao(5.0)
+                .nome("Filme 01")
+                .estoque(1)
+                .build();
+        try {
+            locacaoService.alugarFilme(null, filme);
+            Assert.fail();
+        } catch (LocadoraException e) {
+            Assert.assertEquals("O usuário deve ser informado", e.getMessage());
+        }
+
+
+    }
+
+    @Test
+    public void deveraLancarExcecaoQuandoEstoqueEhNulo() throws Exception {
+
+        LocacaoService locacaoService = new LocacaoService();
+        Usuario usuario = new Usuario("adriano");
+        try{
+            locacaoService.alugarFilme(usuario,null);
+            Assert.fail();
+        }catch (LocadoraException e){
+
+            Assert.assertEquals(e.getClass().getName(),LocadoraException.class.getName());
+        }
 
     }
 

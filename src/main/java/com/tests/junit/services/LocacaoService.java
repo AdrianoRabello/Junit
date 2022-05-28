@@ -1,5 +1,7 @@
 package com.tests.junit.services;
 
+import com.tests.junit.exceptions.FilmeSemEstoqueException;
+import com.tests.junit.exceptions.LocadoraException;
 import com.tests.junit.model.Filme;
 import com.tests.junit.model.Locacao;
 import com.tests.junit.model.Usuario;
@@ -14,9 +16,21 @@ public class LocacaoService {
 
     public Locacao alugarFilme(Usuario usuario, Filme filme) throws Exception {
 
-        if(filme.getEstoque() == 0){
-            throw new Exception("Estoque é 0");
+
+        if(filme == null){
+            throw new LocadoraException("O filme deve ser informado");
         }
+
+        if(filme.getEstoque() == 0){
+            throw new FilmeSemEstoqueException("Estoque é 0");
+        }
+
+        if(usuario == null){
+            throw new LocadoraException("O usuário deve ser informado");
+        }
+
+
+
 
         return new Locacao().builder()
                 .filme(filme)
