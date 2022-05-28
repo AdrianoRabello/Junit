@@ -7,7 +7,9 @@ import com.tests.junit.model.Locacao;
 import com.tests.junit.model.Usuario;
 import com.tests.junit.utils.DataUtils;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Adriano Rabello 27/05/2022 19:54:18
@@ -33,42 +35,66 @@ public class LocacaoService {
                 .filmes(filmes)
                 .usuario(usuario)
                 .dataRetorno(DataUtils.adicionarDias(new Date(), 1))
-                .valor(somarValoresFilme(filmes))
+                .valor(somarValoresFilmeComDesconto(filmes))
                 .dataLocacao(new Date())
                 .dataRetorno(DataUtils.adicionarDias(new Date(), 1))
                 .build();
     }
 
-    private Double somarValoresFilme(List<Filme> filmes){
-//        Optional<Double> valorOptional = filmes.stream().map(x -> x.getPrecoLocacao())
-//                .reduce((a, b) -> a + b);
+    private Double somarValoresFilmeComDesconto(List<Filme> filmes) {
+
 
         Double valorTotal = 0d;
         for (int i = 0; i < filmes.size(); i++) {
             Filme filme = filmes.get(i);
             Double valorFilme = filme.getPrecoLocacao();
 
-            if(i == 2){
+            /** Com if  */
+            if (i == 2) {
                 valorFilme = valorFilme * 0.75;
             }
 
-            if(i == 3){
+            if (i == 3) {
                 valorFilme = valorFilme * 0.50;
             }
 
-            if(i == 4){
-                valorFilme = valorFilme  * 0.25;
+            if (i == 4) {
+                valorFilme = valorFilme * 0.25;
             }
 
-            if(i == 5){
+            if (i == 5) {
                 valorFilme = 0d;
             }
+
+
+            /** Com switch */
+
+            switch (i) {
+                case 2:
+                    valorFilme = valorFilme * 0.75;
+                    break;
+                case 3:
+                    valorFilme = valorFilme * 0.50;
+                    break;
+                case 4:
+                    valorFilme = valorFilme * 0.25;
+                    break;
+                case 5:
+                    valorFilme = 0d;
+                    break;
+            }
+
 
             valorTotal += valorFilme;
 
         }
 
         return valorTotal;
+    }
+
+    private double  somarValoresDosFimes(List<Filme> filmes){
+        return filmes.stream().map(x -> x.getPrecoLocacao())
+                .reduce((a, b) -> a + b).orElse(0d);
     }
 
 }
