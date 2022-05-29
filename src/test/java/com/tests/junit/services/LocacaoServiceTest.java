@@ -207,8 +207,6 @@ public class LocacaoServiceTest {
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
         Assert.assertThat(locacao.getValor(), CoreMatchers.is(14.0));
     }
-
-
     @Test
     public void naoDeveriaDevolverFilmeNoDomingo() throws FilmeSemEstoqueException, LocadoraException {
         Filme filme = new Filme("Filme 01 ", 1, 4.0);
@@ -218,20 +216,16 @@ public class LocacaoServiceTest {
         Assert.assertTrue(ehSegunda);
     }
 
-
     @Test
     public void naoDeveriaDevolverFilmeNoDomingoComAssume() throws FilmeSemEstoqueException, LocadoraException {
-
         // Esse teste só será executado caso o metodo Datautils.verificarDiaDaSemana possui os parametros informados
         // caso contrario o teste será ignorado
         Assume.assumeTrue(DataUtils.verificarDiaDaSemana(new Date(), Calendar.SATURDAY));
-
         Filme filme = new Filme("Filme 01 ", 1, 4.0);
         Usuario usuario = new Usuario("Adriano Rabello");
         Locacao locacao = locacaoService.alugarFilme(usuario, Arrays.asList(filme));
         boolean ehSegunda = DataUtils.verificarDiaDaSemana(locacao.getDataRetorno(), Calendar.MONDAY);
         Assert.assertTrue(ehSegunda);
-
     }
 }
 
