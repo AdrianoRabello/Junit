@@ -3,6 +3,9 @@ package com.tests.junit.utils;
 import java.util.Calendar;
 import java.util.Date;
 
+import static java.util.Calendar.*;
+import static java.util.Calendar.YEAR;
+
 /**
  * @author Adriano Rabello 27/05/2022 19:50:21
  **/
@@ -27,7 +30,21 @@ public class DataUtils {
         return calendar.getTime();
     }
 
+    public static boolean verificarDiaDaSemana(Date data, int diaSemana){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(data);
+        boolean b = calendar.get(DAY_OF_WEEK) == diaSemana;
+        return b;
+    }
+
+
     public static boolean isMesmaData(Date data1, Date data2){
-        return data1.equals(data2);
+        Calendar calendar1 = Calendar.getInstance();
+        calendar1.setTime(data1);
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.setTime(data2);
+        return (calendar1.get(DAY_OF_MONTH) == calendar2.get(DAY_OF_MONTH))
+                && (calendar1.get(MONTH) == calendar2.get(MONTH))
+                && (calendar1.get(YEAR) == calendar2.get(YEAR));
     }
 }

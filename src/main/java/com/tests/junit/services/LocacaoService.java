@@ -6,7 +6,9 @@ import com.tests.junit.model.Filme;
 import com.tests.junit.model.Locacao;
 import com.tests.junit.model.Usuario;
 import com.tests.junit.utils.DataUtils;
+import org.springframework.core.io.buffer.DataBufferUtils;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -31,14 +33,15 @@ public class LocacaoService {
             throw new LocadoraException("O usuário deve ser informado");
         }
 
-        return new Locacao().builder()
+        Locacao locacao  = new Locacao().builder()
                 .filmes(filmes)
                 .usuario(usuario)
-                .dataRetorno(DataUtils.adicionarDias(new Date(), 1))
                 .valor(somarValoresFilmeComDesconto(filmes))
                 .dataLocacao(new Date())
-                .dataRetorno(DataUtils.adicionarDias(new Date(), 1))
+                .dataRetorno(criarDataDevolucao())
                 .build();
+
+        return locacao;
     }
 
     private Double somarValoresFilmeComDesconto(List<Filme> filmes) {
@@ -69,20 +72,20 @@ public class LocacaoService {
 
             /** Com switch */
 
-            switch (i) {
-                case 2:
-                    valorFilme = valorFilme * 0.75;
-                    break;
-                case 3:
-                    valorFilme = valorFilme * 0.50;
-                    break;
-                case 4:
-                    valorFilme = valorFilme * 0.25;
-                    break;
-                case 5:
-                    valorFilme = 0d;
-                    break;
-            }
+//            switch (i) {
+//                case 2:
+//                    valorFilme = valorFilme * 0.75;
+//                    break;
+//                case 3:
+//                    valorFilme = valorFilme * 0.50;
+//                    break;
+//                case 4:
+//                    valorFilme = valorFilme * 0.25;
+//                    break;
+//                case 5:
+//                    valorFilme = 0d;
+//                    break;
+//            }
 
 
             valorTotal += valorFilme;
@@ -92,9 +95,17 @@ public class LocacaoService {
         return valorTotal;
     }
 
-    private double  somarValoresDosFimes(List<Filme> filmes){
+    private double somarValoresDosFimes(List<Filme> filmes) {
         return filmes.stream().map(x -> x.getPrecoLocacao())
                 .reduce((a, b) -> a + b).orElse(0d);
+    }
+
+    private Date criarDataDevolucao() {
+        Date dataAtual = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(dataAtual);
+        Date dataEntrega  = DataUtils.verificarDiaDaSemana(dataAtual, Calendar.SATURDAY) ? DataUtils.adicionarDias(dataAtual, 2) : DataUtils.adicionarDias(dataAtual, 1);
+        return dataEntrega;
     }
 
 }
