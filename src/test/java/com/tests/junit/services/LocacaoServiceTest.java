@@ -1,6 +1,9 @@
 package com.tests.junit.services;
 
 import com.tests.junit.builders.FilmeBuilder;
+import com.tests.junit.builders.LocacaoBuilder;
+import com.tests.junit.builders.UsuarioBuilder;
+import com.tests.junit.daos.LocaocaoDAO;
 import com.tests.junit.exceptions.FilmeSemEstoqueException;
 import com.tests.junit.exceptions.LocadoraException;
 import com.tests.junit.matchers.DiaSemanaMatcher;
@@ -14,12 +17,15 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import static com.tests.junit.builders.FilmeBuilder.filmeBuilder;
+import static com.tests.junit.builders.LocacaoBuilder.umaLocacao;
 import static com.tests.junit.builders.UsuarioBuilder.umUsuario;
 import static com.tests.junit.matchers.MatcherProprios.*;
 
@@ -34,9 +40,21 @@ public class LocacaoServiceTest {
 
     private LocacaoService locacaoService;
 
+    private SPCService spcService;
+
+    private LocaocaoDAO locaocaoDAO;
+
+    private NotificacaoService notificacaoService;
+
     @Before
     public void setUp() {
-        this.locacaoService = new LocacaoService();
+        locacaoService = new LocacaoService();
+        spcService = Mockito.mock(SPCService.class);
+        locaocaoDAO = Mockito.mock(LocaocaoDAO.class);
+        notificacaoService = Mockito.mock(NotificacaoService.class);
+        locacaoService.setSpcService(spcService);
+        locacaoService.setLocaocaoDAO(locaocaoDAO);
+        locacaoService.setNotificacaoService(notificacaoService);
     }
 
     @After
@@ -104,13 +122,21 @@ public class LocacaoServiceTest {
     }
 
     @Test
-    public void deveraLancarExcecaoQuandoEstoqueEhNulo() throws Exception {
-        Usuario usuario = umUsuario().agora();
+    public void deveraLancarExcecaoQuandoFilmeEhNulo() throws Exception {
         try {
-            locacaoService.alugarFilme(usuario, null);
+            locacaoService.alugarFilme(umUsuario().agora(), null);
             Assert.fail();
         } catch (LocadoraException e) {
+            Assert.assertEquals(e.getClass().getName(), LocadoraException.class.getName());
+        }
+    }
 
+    @Test
+    public void deveraLancarExcecaoQuandoFilmesEhVazio() throws Exception {
+        try {
+            locacaoService.alugarFilme(umUsuario().agora(), Arrays.asList());
+            Assert.fail();
+        } catch (LocadoraException e) {
             Assert.assertEquals(e.getClass().getName(), LocadoraException.class.getName());
         }
     }
@@ -153,16 +179,16 @@ public class LocacaoServiceTest {
         Assert.assertTrue(ehSegunda);
     }
 
-    @Test
-    @Disabled
-    public void naoDeveriaDevolverFilmeNoDomingoComAssume() throws FilmeSemEstoqueException, LocadoraException {
-        // Esse teste só será executado caso o metodo Datautils.verificarDiaDaSemana possui os parametros informados
-        // caso contrario o teste será ignorado
-        Assume.assumeTrue(DataUtils.verificarDiaDaSemana(new Date(), Calendar.SATURDAY));
-        Locacao locacao = locacaoService.alugarFilme(umUsuario().agora(), FilmeBuilder.filmeBuilder().variosFilmes(1));
-        boolean ehSegunda = DataUtils.verificarDiaDaSemana(locacao.getDataRetorno(), Calendar.MONDAY);
-        Assert.assertTrue(ehSegunda);
-    }
+//    @Test
+//    @Disabled
+//    public void naoDeveriaDevolverFilmeNoDomingoComAssume() throws FilmeSemEstoqueException, LocadoraException {
+//        // Esse teste só será executado caso o metodo Datautils.verificarDiaDaSemana possui os parametros informados
+//        // caso contrario o teste será ignorado
+//        Assume.assumeTrue(DataUtils.verificarDiaDaSemana(new Date(), Calendar.SATURDAY));
+//        Locacao locacao = locacaoService.alugarFilme(umUsuario().agora(), FilmeBuilder.filmeBuilder().variosFilmes(1));
+//        boolean ehSegunda = DataUtils.verificarDiaDaSemana(locacao.getDataRetorno(), Calendar.MONDAY);
+//        Assert.assertTrue(ehSegunda);
+//    }
 
     /**
      * Esse mtodo só funciona se o teste for rodado no nabado, o que não queremos.
@@ -186,6 +212,35 @@ public class LocacaoServiceTest {
         Locacao locacao = locacaoService.alugarFilme(umUsuario().agora(), FilmeBuilder.filmeBuilder().variosFilmes(1));
         Assert.assertThat(locacao.getDataRetorno(), ehNoDia(1));
         Assert.assertThat(locacao.getDataLocacao(), ehHoje());
+    }
+
+    @Test
+    public void deveraLancarExcecaoComUsuarioNegativado() {
+
+        Mockito.when(spcService.possuiNegativacao(Mockito.any(Usuario.class))).thenReturn(true);
+        try {
+            locacaoService.alugarFilme(umUsuario().agora(), filmeBuilder().variosFilmes(1));
+            Assert.fail();
+        } catch (LocadoraException | FilmeSemEstoqueException exception) {
+            Assert.assertEquals("O usuário está negativado", exception.getMessage());
+        }
+    }
+    @Test
+    public void deveraNotificarUsuariariosComEntregaAtrasada() {
+        Usuario usuario1 = umUsuario().agora();
+        Usuario usuario2 = umUsuario().comNome("Usuario 2").agora();
+        Usuario usuario3 = umUsuario().comNome("Usuario 3").agora();
+        List<Locacao> locacoes = Arrays.asList(
+                umaLocacao().comUsuario(usuario2).agora(),
+                umaLocacao().comAtraso().comUsuario(usuario1).agora(),
+                umaLocacao().comAtraso().comUsuario(usuario3).agora()
+        );
+        Mockito.when(locaocaoDAO.buscarLocacoesAtrasadas()).thenReturn(locacoes);
+        locacaoService.notificarLocacoesAtrasadas();
+        Mockito.verify(notificacaoService).notificarAtraso(usuario1);
+        Mockito.verify(notificacaoService,Mockito.never()).notificarAtraso(usuario2);
+        Mockito.verify(notificacaoService).notificarAtraso(usuario3);
+        Mockito.verifyNoMoreInteractions(notificacaoService);
     }
 }
 

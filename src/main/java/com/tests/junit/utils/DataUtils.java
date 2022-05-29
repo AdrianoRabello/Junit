@@ -47,4 +47,12 @@ public class DataUtils {
                 && (calendar1.get(MONTH) == calendar2.get(MONTH))
                 && (calendar1.get(YEAR) == calendar2.get(YEAR));
     }
+
+    public  static Date criarDataDevolucao() {
+        Date dataAtual = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(dataAtual);
+        Date dataEntrega = DataUtils.verificarDiaDaSemana(dataAtual, Calendar.SATURDAY) ? DataUtils.adicionarDias(dataAtual, 2) : DataUtils.adicionarDias(dataAtual, 1);
+        return dataEntrega;
+    }
 }
