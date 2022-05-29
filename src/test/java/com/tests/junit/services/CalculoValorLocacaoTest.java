@@ -69,6 +69,7 @@ public class CalculoValorLocacaoTest {
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
         // verificaoção
         Assert.assertThat(locacao.getValor(), CoreMatchers.is(valorDesconto));
+        System.out.println("!");
     }
 
     @Test

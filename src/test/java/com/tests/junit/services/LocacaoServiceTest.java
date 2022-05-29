@@ -9,6 +9,7 @@ import com.tests.junit.model.Usuario;
 import com.tests.junit.utils.DataUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.*;
+import org.junit.jupiter.api.Disabled;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
 
@@ -17,8 +18,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static com.tests.junit.matchers.MatcherProprios.caiEm;
-import static com.tests.junit.matchers.MatcherProprios.caiNaSegundaFeira;
+import static com.tests.junit.matchers.MatcherProprios.*;
 
 public class LocacaoServiceTest {
 
@@ -222,6 +222,7 @@ public class LocacaoServiceTest {
     }
 
     @Test
+    @Disabled
     public void naoDeveriaDevolverFilmeNoDomingoComAssume() throws FilmeSemEstoqueException, LocadoraException {
         // Esse teste só será executado caso o metodo Datautils.verificarDiaDaSemana possui os parametros informados
         // caso contrario o teste será ignorado
@@ -234,7 +235,11 @@ public class LocacaoServiceTest {
     }
 
 
+
+    /**
+     * Esse mtodo só funciona se o teste for rodado no nabado, o que não queremos. */
     @Test
+    @Disabled
     public void veirificarDiaSemanaComMeuMatcher() throws FilmeSemEstoqueException, LocadoraException {
         Filme filme = new Filme("Filme 01 ", 1, 4.0);
         Usuario usuario = new Usuario("Adriano Rabello");
@@ -249,6 +254,15 @@ public class LocacaoServiceTest {
         Locacao locacao = locacaoService.alugarFilme(usuario, Arrays.asList(filme));
         Assert.assertThat(locacao.getDataRetorno(), caiEm(Calendar.MONDAY));
         Assert.assertThat(locacao.getDataRetorno(), caiNaSegundaFeira());
+    }
+
+    @Test
+    public void verificarDataDeRetornoComMeuMathcerComDiferencaDeDias() throws FilmeSemEstoqueException, LocadoraException{
+        Filme filme = new Filme("Filme 01 ", 1, 4.0);
+        Usuario usuario = new Usuario("Adriano Rabello");
+        Locacao locacao = locacaoService.alugarFilme(usuario, Arrays.asList(filme));
+        Assert.assertThat(locacao.getDataRetorno(),ehNoDia(1));
+        Assert.assertThat(locacao.getDataLocacao(),ehHoje());
     }
 }
 

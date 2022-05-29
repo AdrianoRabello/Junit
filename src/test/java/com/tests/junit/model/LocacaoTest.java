@@ -44,8 +44,8 @@ public class LocacaoTest {
 
         // o error collector coleta o error de todos as assertivas para poder analizar onde
         // o código está errado, mesmo que no primeiro assert o código dê errado
-        error.checkThat(locacao.getValor(),is(2.0));
-        error.checkThat(locacao.getValor(),not(5.0));
+        error.checkThat(locacao.getValor(),is(5.0));
+        error.checkThat(locacao.getValor(),not(6.0));
 
     }
 
