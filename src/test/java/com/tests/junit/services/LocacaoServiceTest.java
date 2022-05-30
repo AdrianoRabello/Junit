@@ -1,6 +1,7 @@
 package com.tests.junit.services;
 
 import com.tests.junit.builders.FilmeBuilder;
+import com.tests.junit.builders.LocacaoBuilder;
 import com.tests.junit.daos.LocaocaoDAO;
 import com.tests.junit.exceptions.FilmeSemEstoqueException;
 import com.tests.junit.exceptions.LocadoraException;
@@ -19,6 +20,7 @@ import org.mockito.*;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -29,6 +31,7 @@ import static com.tests.junit.builders.FilmeBuilder.filmeBuilder;
 import static com.tests.junit.builders.LocacaoBuilder.umaLocacao;
 import static com.tests.junit.builders.UsuarioBuilder.umUsuario;
 import static com.tests.junit.matchers.MatcherProprios.*;
+import static org.hamcrest.Matchers.is;
 
 
 @RunWith(PowerMockRunner.class)
@@ -38,11 +41,15 @@ public class LocacaoServiceTest {
     @InjectMocks
     private LocacaoService locacaoService;
 
+    @InjectMocks
+    private LocacaoService locacaoServiceSpy;
+
     @Rule
     public ErrorCollector error = new ErrorCollector();
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
+
 
 
 
@@ -56,6 +63,8 @@ public class LocacaoServiceTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        locacaoServiceSpy = PowerMockito.spy(locacaoServiceSpy);
     }
 
     @After
@@ -282,6 +291,22 @@ public class LocacaoServiceTest {
         Assert.assertThat(locacaoRetornada.getDataLocacao(),ehHoje());
         Assert.assertThat(locacaoRetornada.getDataRetorno(),ehNoDia(3));
 
+    }
+
+    @Test
+    public void deverarMockarMetodoPrivadoNaoPermitindoRetornandoUmMockDoValor() throws Exception {
+        Usuario usuario = umUsuario().agora();
+        List<Filme> filmes = filmeBuilder().variosFilmes(1);
+        PowerMockito.doReturn(1.0).when(locacaoServiceSpy,"somarValoresFilmeComDesconto",filmes);
+        Locacao locacao = locacaoServiceSpy.alugarFilme(usuario, filmes);
+        Assert.assertThat(locacao.getValor(),is(1.0));
+    }
+
+    @Test
+    public void deveraCalculaValorLocacao() throws Exception {
+        List<Filme> filmes = filmeBuilder().variosFilmes(1);
+        Double somaDosValoresFilme = Whitebox.invokeMethod(locacaoServiceSpy, "somarValoresFilmeComDesconto", filmes);
+        Assert.assertEquals(Double.valueOf(4.0),somaDosValoresFilme);
     }
 }
 
