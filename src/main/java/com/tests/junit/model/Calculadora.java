@@ -9,7 +9,7 @@ import java.util.Objects;
  **/
 public class Calculadora {
     public int somar(int a, int b) {
-
+        System.out.println("Somando dois números ");
         return a + b;
     }
 
@@ -25,5 +25,8 @@ public class Calculadora {
         }
 
         return a/b;
+    }
+    public void imprime(){
+        System.out.println("Imprimindo dentro da calculadora");
     }
 }

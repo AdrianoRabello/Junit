@@ -18,6 +18,7 @@ import org.mockito.*;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static com.tests.junit.builders.FilmeBuilder.filmeBuilder;
@@ -172,16 +173,15 @@ public class LocacaoServiceTest {
         Assert.assertTrue(ehSegunda);
     }
 
-//    @Test
-//    @Disabled
-//    public void naoDeveriaDevolverFilmeNoDomingoComAssume() throws FilmeSemEstoqueException, LocadoraException {
-//        // Esse teste só será executado caso o metodo Datautils.verificarDiaDaSemana possui os parametros informados
-//        // caso contrario o teste será ignorado
+    @Test
+    public void naoDeveriaDevolverFilmeNoDomingoComAssume() throws FilmeSemEstoqueException, LocadoraException {
+        // Esse teste só será executado caso o metodo Datautils.verificarDiaDaSemana possui os parametros informados
+        // caso contrario o teste será ignorado
 //        Assume.assumeTrue(DataUtils.verificarDiaDaSemana(new Date(), Calendar.SATURDAY));
-//        Locacao locacao = locacaoService.alugarFilme(umUsuario().agora(), FilmeBuilder.filmeBuilder().variosFilmes(1));
-//        boolean ehSegunda = DataUtils.verificarDiaDaSemana(locacao.getDataRetorno(), Calendar.MONDAY);
-//        Assert.assertTrue(ehSegunda);
-//    }
+        Locacao locacao = locacaoService.alugarFilme(umUsuario().agora(), FilmeBuilder.filmeBuilder().variosFilmes(1));
+        boolean ehSegunda = DataUtils.verificarDiaDaSemana(locacao.getDataRetorno(), Calendar.MONDAY);
+        Assert.assertTrue(ehSegunda);
+    }
 
     /**
      * Esse mtodo só funciona se o teste for rodado no nabado, o que não queremos.
