@@ -14,7 +14,11 @@ import org.junit.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.mockito.*;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -26,6 +30,9 @@ import static com.tests.junit.builders.LocacaoBuilder.umaLocacao;
 import static com.tests.junit.builders.UsuarioBuilder.umUsuario;
 import static com.tests.junit.matchers.MatcherProprios.*;
 
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({LocacaoService.class, DataUtils.class})
 public class LocacaoServiceTest {
 
     @InjectMocks
@@ -167,17 +174,20 @@ public class LocacaoServiceTest {
     }
 
     @Test
-    public void naoDeveriaDevolverFilmeNoDomingo() throws FilmeSemEstoqueException, LocadoraException {
+    public void naoDeveriaDevolverFilmeNoDomingo() throws Exception {
+        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(27,5,2022));
         Locacao locacao = locacaoService.alugarFilme(umUsuario().agora(), filmeBuilder().variosFilmes(1));
         boolean ehSegunda = DataUtils.verificarDiaDaSemana(locacao.getDataRetorno(), Calendar.MONDAY);
         Assert.assertTrue(ehSegunda);
     }
 
     @Test
-    public void naoDeveriaDevolverFilmeNoDomingoComAssume() throws FilmeSemEstoqueException, LocadoraException {
+    public void naoDeveriaDevolverFilmeNoDomingoComAssume() throws Exception {
         // Esse teste só será executado caso o metodo Datautils.verificarDiaDaSemana possui os parametros informados
         // caso contrario o teste será ignorado
 //        Assume.assumeTrue(DataUtils.verificarDiaDaSemana(new Date(), Calendar.SATURDAY));
+
+        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(27,5,2022));
         Locacao locacao = locacaoService.alugarFilme(umUsuario().agora(), FilmeBuilder.filmeBuilder().variosFilmes(1));
         boolean ehSegunda = DataUtils.verificarDiaDaSemana(locacao.getDataRetorno(), Calendar.MONDAY);
         Assert.assertTrue(ehSegunda);
@@ -188,13 +198,18 @@ public class LocacaoServiceTest {
      */
     @Test
     @DisplayName("Devera colocar data de retorno para segunda feira caso a data caia no domingo ")
-    public void veirificarDiaSemanaComMeuMatcher() throws FilmeSemEstoqueException, LocadoraException {
+    public void veirificarDiaSemanaComMeuMatcher() throws Exception {
+        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(27,5,2022));
         Locacao locacao = locacaoService.alugarFilme(umUsuario().agora(), filmeBuilder().variosFilmes(1));
         Assert.assertThat(locacao.getDataRetorno(), new DiaSemanaMatcher(Calendar.MONDAY));
+
+        // não há necessidade de criar varias verificações em um método
+        PowerMockito.verifyNew(Date.class,Mockito.times(2)).withNoArguments();
     }
 
     @Test
-    public void verificarDiaSemanaComMatCherProperties() throws FilmeSemEstoqueException, LocadoraException {
+    public void verificarDiaSemanaComMatCherProperties() throws Exception {
+        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(27,5,2022));
         Locacao locacao = locacaoService.alugarFilme(umUsuario().agora(), FilmeBuilder.filmeBuilder().variosFilmes(1));
         Assert.assertThat(locacao.getDataRetorno(), caiEm(Calendar.MONDAY));
         Assert.assertThat(locacao.getDataRetorno(), caiNaSegundaFeira());
