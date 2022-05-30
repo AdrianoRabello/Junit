@@ -32,4 +32,16 @@ public class Locacao {
         this.valor = filmes.stream().map(x -> x.getPrecoLocacao())
                 .reduce((a, b) -> a + b).get();
     }
+
+
+    @Override
+    public String toString() {
+        return "Locacao{" +
+                "usuario=" + usuario +
+                ", filmes=" + filmes +
+                ", dataLocacao=" + dataLocacao +
+                ", dataRetorno=" + dataRetorno +
+                ", valor=" + valor +
+                '}';
+    }
 }

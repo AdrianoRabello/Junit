@@ -1,8 +1,6 @@
 package com.tests.junit.services;
 
 import com.tests.junit.builders.FilmeBuilder;
-import com.tests.junit.builders.LocacaoBuilder;
-import com.tests.junit.builders.UsuarioBuilder;
 import com.tests.junit.daos.LocaocaoDAO;
 import com.tests.junit.exceptions.FilmeSemEstoqueException;
 import com.tests.junit.exceptions.LocadoraException;
@@ -13,15 +11,13 @@ import com.tests.junit.model.Usuario;
 import com.tests.junit.utils.DataUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.*;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mockito;
+import org.mockito.*;
 
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import static com.tests.junit.builders.FilmeBuilder.filmeBuilder;
@@ -31,6 +27,8 @@ import static com.tests.junit.matchers.MatcherProprios.*;
 
 public class LocacaoServiceTest {
 
+    @InjectMocks
+    private LocacaoService locacaoService;
 
     @Rule
     public ErrorCollector error = new ErrorCollector();
@@ -38,27 +36,23 @@ public class LocacaoServiceTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private LocacaoService locacaoService;
 
+
+    @Mock
     private SPCService spcService;
-
+    @Mock
     private LocaocaoDAO locaocaoDAO;
-
+    @Mock
     private NotificacaoService notificacaoService;
 
     @Before
     public void setUp() {
-        locacaoService = new LocacaoService();
-        spcService = Mockito.mock(SPCService.class);
-        locaocaoDAO = Mockito.mock(LocaocaoDAO.class);
-        notificacaoService = Mockito.mock(NotificacaoService.class);
-        locacaoService.setSpcService(spcService);
-        locacaoService.setLocaocaoDAO(locaocaoDAO);
-        locacaoService.setNotificacaoService(notificacaoService);
+        MockitoAnnotations.initMocks(this);
     }
 
     @After
     public void tearDown() {
+
     }
 
     @BeforeClass
@@ -100,7 +94,6 @@ public class LocacaoServiceTest {
                     .variosFilmes(1));
             Assert.fail("Devera lançar exceção para validar a mensagem ");
         } catch (Exception e) {
-            Assert.assertThat(e.getMessage(), CoreMatchers.is("O estoque do filme deve ser maior que 0"));
             Assert.assertEquals("O estoque do filme deve ser maior que 0", e.getMessage());
         }
     }
@@ -225,6 +218,7 @@ public class LocacaoServiceTest {
             Assert.assertEquals("O usuário está negativado", exception.getMessage());
         }
     }
+
     @Test
     public void deveraNotificarUsuariariosComEntregaAtrasada() {
         Usuario usuario1 = umUsuario().agora();
@@ -238,9 +232,27 @@ public class LocacaoServiceTest {
         Mockito.when(locaocaoDAO.buscarLocacoesAtrasadas()).thenReturn(locacoes);
         locacaoService.notificarLocacoesAtrasadas();
         Mockito.verify(notificacaoService).notificarAtraso(usuario1);
-        Mockito.verify(notificacaoService,Mockito.never()).notificarAtraso(usuario2);
+        Mockito.verify(notificacaoService, Mockito.never()).notificarAtraso(usuario2);
         Mockito.verify(notificacaoService).notificarAtraso(usuario3);
         Mockito.verifyNoMoreInteractions(notificacaoService);
+    }
+
+
+    @Test
+    public void deveProrrogarUmaLocacao(){
+        Locacao locacao = umaLocacao().agora();
+        locacaoService.prorrogarLocacao(locacao,3);
+
+        ArgumentCaptor<Locacao> argumentCaptor = ArgumentCaptor.forClass(Locacao.class);
+
+        /** para capturar o calor que o locacaoDAO.salvar() está executando */
+        Mockito.verify(locaocaoDAO).salvar(argumentCaptor.capture());
+        /** é nesse objeto que temos o valor do objeto persistido*/
+        Locacao locacaoRetornada = argumentCaptor.getValue();
+        Assert.assertThat(locacaoRetornada.getValor(),CoreMatchers.is(12.0));
+        Assert.assertThat(locacaoRetornada.getDataLocacao(),ehHoje());
+        Assert.assertThat(locacaoRetornada.getDataRetorno(),ehNoDia(3));
+
     }
 }
 

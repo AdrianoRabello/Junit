@@ -39,7 +39,7 @@ public class LocacaoService {
             throw new LocadoraException("O usuário deve ser informado");
         }
 
-        if(spcService.possuiNegativacao(usuario)){
+        if (spcService.possuiNegativacao(usuario)) {
             throw new LocadoraException("O usuário está negativado");
         }
 
@@ -55,12 +55,12 @@ public class LocacaoService {
         return locacao;
     }
 
-    public void notificarLocacoesAtrasadas(){
+    public void notificarLocacoesAtrasadas() {
 
         List<Locacao> locacoes = locaocaoDAO.buscarLocacoesAtrasadas();
         for (Locacao locacao : locacoes) {
             Usuario usuario = locacao.getUsuario();
-            if(locacao.getDataRetorno().before(new Date()))
+            if (locacao.getDataRetorno().before(new Date()))
                 notificacaoService.notificarAtraso(usuario);
         }
     }
@@ -89,6 +89,7 @@ public class LocacaoService {
         }
         return valorTotal;
     }
+
     private Date criarDataDevolucao() {
         Date dataAtual = new Date();
         Calendar calendar = Calendar.getInstance();
@@ -97,15 +98,17 @@ public class LocacaoService {
         return dataEntrega;
     }
 
-    public void setLocaocaoDAO(LocaocaoDAO locaocaoDAO) {
-        this.locaocaoDAO = locaocaoDAO;
+
+    public void prorrogarLocacao(Locacao locacao, int dias){
+        Locacao novaLocacao = new Locacao();
+        novaLocacao.setUsuario(locacao.getUsuario());
+        novaLocacao.setFilmes(locacao.getFilmes());
+        novaLocacao.setDataLocacao(new Date());
+        novaLocacao.setDataRetorno(DataUtils.obterDataComDiferencaDias(dias));
+        novaLocacao.setValor(locacao.getValor());
+        novaLocacao.setValor(locacao.getValor() * dias);
+        locaocaoDAO.salvar(novaLocacao);
     }
 
-    public void setSpcService(SPCService spcService) {
-        this.spcService = spcService;
-    }
 
-    public void setNotificacaoService(NotificacaoService notificacaoService) {
-        this.notificacaoService = notificacaoService;
-    }
 }

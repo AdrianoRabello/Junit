@@ -29,7 +29,7 @@ public class DataDiferencaDiasMatcher extends TypeSafeMatcher<Date> {
     public void describeTo(Description description) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(DataUtils.obterDataComDiferencaDias(diferencaDias));
-        String dataPorExtenso = new SimpleDateFormat("d M ", new Locale("pt","BR")).format(calendar.getTime());
+        String dataPorExtenso = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US).format(calendar.getTime());
         description.appendText(dataPorExtenso);
     }
 }
