@@ -47,7 +47,7 @@ public class LocacaoService {
                 .filmes(filmes)
                 .usuario(usuario)
                 .valor(somarValoresFilmeComDesconto(filmes))
-                .dataLocacao(new Date())
+                .dataLocacao(Calendar.getInstance().getTime())
                 .dataRetorno(criarDataDevolucao())
                 .build();
 
@@ -91,7 +91,7 @@ public class LocacaoService {
     }
 
     private Date criarDataDevolucao() {
-        Date dataAtual = new Date();
+        Date dataAtual = Calendar.getInstance().getTime();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(dataAtual);
         Date dataEntrega = DataUtils.verificarDiaDaSemana(dataAtual, Calendar.SATURDAY) ? DataUtils.adicionarDias(dataAtual, 2) : DataUtils.adicionarDias(dataAtual, 1);

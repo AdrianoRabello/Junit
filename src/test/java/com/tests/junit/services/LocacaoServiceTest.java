@@ -32,7 +32,7 @@ import static com.tests.junit.matchers.MatcherProprios.*;
 
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({LocacaoService.class, DataUtils.class})
+@PrepareForTest({LocacaoService.class,DataUtils.class,DiaSemanaMatcher.class})
 public class LocacaoServiceTest {
 
     @InjectMocks
@@ -175,7 +175,12 @@ public class LocacaoServiceTest {
 
     @Test
     public void naoDeveriaDevolverFilmeNoDomingo() throws Exception {
-        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(27,5,2022));
+        Calendar calendar  = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH,28);
+        calendar.set(Calendar.MONTH,Calendar.MAY);
+        calendar.set(Calendar.YEAR,2022);
+        PowerMockito.mockStatic(Calendar.class);
+        PowerMockito.when(Calendar.getInstance()).thenReturn(calendar);
         Locacao locacao = locacaoService.alugarFilme(umUsuario().agora(), filmeBuilder().variosFilmes(1));
         boolean ehSegunda = DataUtils.verificarDiaDaSemana(locacao.getDataRetorno(), Calendar.MONDAY);
         Assert.assertTrue(ehSegunda);
@@ -183,11 +188,12 @@ public class LocacaoServiceTest {
 
     @Test
     public void naoDeveriaDevolverFilmeNoDomingoComAssume() throws Exception {
-        // Esse teste só será executado caso o metodo Datautils.verificarDiaDaSemana possui os parametros informados
-        // caso contrario o teste será ignorado
-//        Assume.assumeTrue(DataUtils.verificarDiaDaSemana(new Date(), Calendar.SATURDAY));
-
-        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(27,5,2022));
+        Calendar calendar  = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH,28);
+        calendar.set(Calendar.MONTH,Calendar.MAY);
+        calendar.set(Calendar.YEAR,2022);
+        PowerMockito.mockStatic(Calendar.class);
+        PowerMockito.when(Calendar.getInstance()).thenReturn(calendar);
         Locacao locacao = locacaoService.alugarFilme(umUsuario().agora(), FilmeBuilder.filmeBuilder().variosFilmes(1));
         boolean ehSegunda = DataUtils.verificarDiaDaSemana(locacao.getDataRetorno(), Calendar.MONDAY);
         Assert.assertTrue(ehSegunda);
@@ -199,19 +205,27 @@ public class LocacaoServiceTest {
     @Test
     @DisplayName("Devera colocar data de retorno para segunda feira caso a data caia no domingo ")
     public void veirificarDiaSemanaComMeuMatcher() throws Exception {
-        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(27,5,2022));
-        Locacao locacao = locacaoService.alugarFilme(umUsuario().agora(), filmeBuilder().variosFilmes(1));
-        Assert.assertThat(locacao.getDataRetorno(), new DiaSemanaMatcher(Calendar.MONDAY));
+        
 
-        // não há necessidade de criar varias verificações em um método
-        PowerMockito.verifyNew(Date.class,Mockito.times(2)).withNoArguments();
+        Calendar calendar  = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH,28);
+        calendar.set(Calendar.MONTH,Calendar.MAY);
+        calendar.set(Calendar.YEAR,2022);
+        PowerMockito.mockStatic(Calendar.class);
+        PowerMockito.when(Calendar.getInstance()).thenReturn(calendar);
+        Locacao locacao = locacaoService.alugarFilme(umUsuario().agora(), filmeBuilder().variosFilmes(1));
+        Assert.assertThat(locacao.getDataRetorno(),new DiaSemanaMatcher(Calendar.MONDAY));
     }
 
     @Test
     public void verificarDiaSemanaComMatCherProperties() throws Exception {
-        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(27,5,2022));
+        Calendar calendar  = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH,28);
+        calendar.set(Calendar.MONTH,Calendar.MAY);
+        calendar.set(Calendar.YEAR,2022);
+        PowerMockito.mockStatic(Calendar.class);
+        PowerMockito.when(Calendar.getInstance()).thenReturn(calendar);
         Locacao locacao = locacaoService.alugarFilme(umUsuario().agora(), FilmeBuilder.filmeBuilder().variosFilmes(1));
-        Assert.assertThat(locacao.getDataRetorno(), caiEm(Calendar.MONDAY));
         Assert.assertThat(locacao.getDataRetorno(), caiNaSegundaFeira());
     }
 

@@ -5,6 +5,7 @@ import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
 import javax.xml.crypto.Data;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -28,9 +29,9 @@ public class DiaSemanaMatcher  extends TypeSafeMatcher<Date> {
 
     @Override
     public void describeTo(Description description) {
-        Calendar data = Calendar.getInstance();
-        data.set(Calendar.DAY_OF_WEEK, diaSemama);
-        String dataPorExtenso = data.getDisplayName(Calendar.DAY_OF_WEEK,Calendar.LONG,new Locale("pt","BR"));
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_WEEK, diaSemama);
+        String dataPorExtenso = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US).format(calendar.getTime());
         description.appendText(dataPorExtenso);
     }
 }
