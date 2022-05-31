@@ -37,7 +37,7 @@ public class CalculadoraTest {
     }
 
     @Test
-    public void deveraSomarDoisNumeros() {
+    public void deveraSomarDoisNumeros(){
 
         Mockito.when(calculadoraMock.somar(5, 3)).thenReturn(8);
         int resultado = this.calculadoraMock.somar(5, 3);
