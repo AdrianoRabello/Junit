@@ -1,9 +1,12 @@
 package com.tests.junit.model;
 
 import com.tests.junit.exceptions.DivisaoPorZeroException;
+import com.tests.junit.runner.ParallelRunner;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -12,6 +15,7 @@ import org.mockito.Spy;
 /**
  * @author Adriano Rabello 28/05/2022 16:16:23
  **/
+@RunWith(ParallelRunner.class)
 public class CalculadoraTest {
 
 
@@ -23,8 +27,13 @@ public class CalculadoraTest {
 
     @Before
     public void setUp() {
-
         MockitoAnnotations.initMocks(this);
+        System.out.println("Inicializando os testes");
+    }
+
+    @After
+    public void after(){
+        System.out.println("Finalizando os testes");
     }
 
     @Test
