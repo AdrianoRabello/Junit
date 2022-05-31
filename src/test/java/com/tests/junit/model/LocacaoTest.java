@@ -1,9 +1,16 @@
 package com.tests.junit.model;
 
+import com.tests.junit.daos.LocaocaoDAO;
 import com.tests.junit.services.LocacaoService;
+import com.tests.junit.services.SPCService;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,10 +26,24 @@ public class LocacaoTest {
     @Rule
     public ErrorCollector error = new ErrorCollector();
 
+
+    @InjectMocks
+    private LocacaoService locacaoService;
+
+    @Mock
+    private SPCService spcService;
+
+    @Mock
+    private LocaocaoDAO locaocaoDAO;
+
+    @Before
+    public void  setUp(){
+        MockitoAnnotations.initMocks(this);
+    }
+
     @Test
     public void testeDaLocacaoComAssertThat() {
 
-        LocacaoService locacaoService = new LocacaoService();
         Usuario adriano = new Usuario().builder().nome("Adriano").build();
         Filme filme = new Filme().builder()
                 .nome("FIlme 01 ")

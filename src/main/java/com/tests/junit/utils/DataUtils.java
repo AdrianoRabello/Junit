@@ -24,17 +24,16 @@ public class DataUtils {
 
     public  static Date obterData(int dia, int mes,int ano){
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, dia);
-        calendar.add(Calendar.MONTH, mes);
-        calendar.add(Calendar.YEAR, ano);
+        calendar.set(Calendar.DAY_OF_MONTH, dia);
+        calendar.set(Calendar.MONTH, mes);
+        calendar.set(Calendar.YEAR, ano);
         return calendar.getTime();
     }
 
     public static boolean verificarDiaDaSemana(Date data, int diaSemana){
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(data);
-        boolean b = calendar.get(DAY_OF_WEEK) == diaSemana;
-        return b;
+        return calendar.get(DAY_OF_WEEK) == diaSemana;
     }
 
 

@@ -4,7 +4,6 @@ import com.tests.junit.utils.DataUtils;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-import javax.xml.crypto.Data;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,7 +12,7 @@ import java.util.Locale;
 /**
  * @author Adriano Rabello 29/05/2022 10:13:33
  **/
-public class DiaSemanaMatcher  extends TypeSafeMatcher<Date> {
+public class DiaSemanaMatcher extends TypeSafeMatcher<Date> {
 
     private Integer diaSemama;
 
@@ -24,7 +23,7 @@ public class DiaSemanaMatcher  extends TypeSafeMatcher<Date> {
 
     @Override
     protected boolean matchesSafely(Date data) {
-        return DataUtils.verificarDiaDaSemana(data,diaSemama);
+        return DataUtils.verificarDiaDaSemana(data, diaSemama);
     }
 
     @Override

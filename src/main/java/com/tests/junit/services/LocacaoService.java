@@ -47,12 +47,16 @@ public class LocacaoService {
                 .filmes(filmes)
                 .usuario(usuario)
                 .valor(somarValoresFilmeComDesconto(filmes))
-                .dataLocacao(Calendar.getInstance().getTime())
+                .dataLocacao(obterData())
                 .dataRetorno(criarDataDevolucao())
                 .build();
 
         locaocaoDAO.salvar(locacao);
         return locacao;
+    }
+
+    protected Date obterData() {
+        return new Date();
     }
 
     public void notificarLocacoesAtrasadas() {
@@ -90,16 +94,13 @@ public class LocacaoService {
         return valorTotal;
     }
 
-    private Date criarDataDevolucao() {
-        Date dataAtual = Calendar.getInstance().getTime();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(dataAtual);
-        Date dataEntrega = DataUtils.verificarDiaDaSemana(dataAtual, Calendar.SATURDAY) ? DataUtils.adicionarDias(dataAtual, 2) : DataUtils.adicionarDias(dataAtual, 1);
-        return dataEntrega;
+    protected Date criarDataDevolucao() {
+        Date dataAtual = obterData();
+        return DataUtils.verificarDiaDaSemana(dataAtual, Calendar.SATURDAY) ? DataUtils.adicionarDias(dataAtual, 2) : DataUtils.adicionarDias(dataAtual, 1);
     }
 
 
-    public void prorrogarLocacao(Locacao locacao, int dias){
+    public void prorrogarLocacao(Locacao locacao, int dias) {
         Locacao novaLocacao = new Locacao();
         novaLocacao.setUsuario(locacao.getUsuario());
         novaLocacao.setFilmes(locacao.getFilmes());

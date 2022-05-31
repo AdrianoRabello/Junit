@@ -2,9 +2,12 @@ package com.tests.junit.services;
 
 import com.tests.junit.model.CalculadoraTest;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 /**
  * @author Adriano Rabello 29/05/2022 13:56:41
@@ -17,10 +20,18 @@ import org.junit.runners.Suite;
  * */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        CalculadoraTest.class,
-        LocacaoServiceTest.class
+        LocacaoServiceTest.class,
+        CalculoValorLocacaoTest.class
 })
 public class SuiteExecucao {
+
+    @Mock
+    public SPCService spcService;
+
+    @Before
+    public void setUp(){
+        MockitoAnnotations.initMocks(this);
+    }
 
     @BeforeClass
     public static void before(){
